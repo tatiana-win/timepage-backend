@@ -30,6 +30,9 @@ const Note = sq.define("note", {
     date: {
         type: DataTypes.DATE,
     },
+    hasTime: {
+        type: DataTypes.BOOLEAN,
+    },
 });
 
 Note.belongsTo(User, {

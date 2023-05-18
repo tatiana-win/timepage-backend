@@ -30,18 +30,6 @@ router.get('/', [verifyToken], async function (req, res) {
         ],
     });
 
-    if (req.query.to && req.query.from) {
-        notes = notes.reduce((acc, currentValue) => {
-            const dateString = currentValue.date.toISOString().split('T')[0];
-            if (acc[dateString]) {
-                acc[dateString].push(currentValue);
-            } else {
-                acc[dateString] = [currentValue]
-            }
-            return acc;
-        }, {});
-    }
-
     res.json(notes);
 });
 
@@ -53,7 +41,8 @@ router.post('/', [verifyToken], async function (req, res, next) {
         color: req.body.color,
         completed: req.body.completed,
         date: req.body.date,
-        userId: req.userId
+        userId: req.userId,
+        hasTime: req.body.hasTime
     });
     res.json(note);
 });
@@ -66,6 +55,7 @@ router.patch('/:id', [verifyToken], async function (req, res, next) {
         color: req.body.color,
         completed: req.body.completed,
         date: req.body.date,
+        hasTime: req.body.hasTime
     }, {
         where: {
             id: req.params.id

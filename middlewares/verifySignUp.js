@@ -36,31 +36,5 @@ checkDuplicateUsernameOrEmail = async (req, res, next) => {
         });
     }
 };
-const err = {
-    "name": "SequelizeDatabaseError",
-    "parent": {
-        "length": 109,
-        "name": "error",
-        "severity": "ERROR",
-        "code": "42703",
-        "position": "47",
-        "file": "parse_relation.c",
-        "line": "3643",
-        "routine": "errorMissingColumn",
-        "sql": "SELECT \"id\", \"username\", \"email\", \"password\", \"createdAt\", \"updatedAt\" FROM \"users\" AS \"user\" WHERE \"user\".\"username\" = 'myUser' LIMIT 1;"
-    },
-    "original": {
-        "length": 109,
-        "name": "error",
-        "severity": "ERROR",
-        "code": "42703",
-        "position": "47",
-        "file": "parse_relation.c",
-        "line": "3643",
-        "routine": "errorMissingColumn",
-        "sql": "SELECT \"id\", \"username\", \"email\", \"password\", \"createdAt\", \"updatedAt\" FROM \"users\" AS \"user\" WHERE \"user\".\"username\" = 'myUser' LIMIT 1;"
-    },
-    "sql": "SELECT \"id\", \"username\", \"email\", \"password\", \"createdAt\", \"updatedAt\" FROM \"users\" AS \"user\" WHERE \"user\".\"username\" = 'myUser' LIMIT 1;",
-    "parameters": {}
-}
+
 module.exports = { checkDuplicateUsernameOrEmail };
