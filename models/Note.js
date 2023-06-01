@@ -1,5 +1,5 @@
 const { sq } = require("../db");
-const { DataTypes } = require("sequelize");
+const { DataTypes, ENUM } = require("sequelize");
 const {User} = require("./User");
 
 const Note = sq.define("note", {
@@ -33,6 +33,12 @@ const Note = sq.define("note", {
     hasTime: {
         type: DataTypes.BOOLEAN,
     },
+    repeatable: {
+        type: DataTypes.BOOLEAN
+    },
+    period: {
+        type: ENUM('week', 'month', 'year')
+    }
 });
 
 Note.belongsTo(User, {
