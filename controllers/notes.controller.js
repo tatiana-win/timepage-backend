@@ -1,6 +1,7 @@
 const { Note } = require("../models/Note");
 const { Op } = require('sequelize');
 const { getRepeatNotes, createRepeatEvent, updateRepeatEvent, deleteRepeatEvent } = require("./repeat.controller");
+const {getCompletedEvents} = require("./completedEvents.controller");
 
 exports.getNotes = async (req, res) => {
     try {
@@ -25,6 +26,14 @@ exports.getNotes = async (req, res) => {
 
 
             notes = [...notes, ...(await getRepeatNotes(from, to, req.userId, notes.map(n => n.id)))];
+            const completedEvents = await getCompletedEvents(from, to, req.userId);
+            notes = notes.map(note => {
+                const completed = !!completedEvents.find(event => event.noteId === note.id);
+                return {
+                    ...note.dataValues,
+                    completed: completed
+                }
+            });
         } else {
             notes = await Note.findAll({
                 where: {
@@ -52,7 +61,6 @@ exports.createNote = async (req, res) => {
             title: req.body.title,
             description: req.body.description,
             color: req.body.color,
-            completed: req.body.completed,
             date: req.body.date,
             userId: req.userId,
             hasTime: req.body.hasTime,
@@ -84,11 +92,11 @@ exports.updateNote = async (req, res) => {
             title: req.body.title,
             description: req.body.description,
             color: req.body.color,
-            completed: req.body.completed,
             date: req.body.date,
             hasTime: req.body.hasTime,
             repeatable: req.body.repeatable,
-            period: req.body.period
+            period: req.body.period,
+            completed: req.body.completed
         }, {
             where: {
                 id: req.params.id

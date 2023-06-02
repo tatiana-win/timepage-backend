@@ -1,6 +1,8 @@
 const { User } = require('../models/User');
 const { Note } = require("../models/Note");
 const bcrypt = require("bcryptjs");
+const { RepeatEvent } = require("../models/RepeatEvent");
+const { CompletedEvent } = require("../models/CompletedEvents");
 
 exports.dropTables = async (req, res) => {
     if (process.env.NODE_ENV !== 'test') {
@@ -10,6 +12,8 @@ exports.dropTables = async (req, res) => {
     try {
         await User.destroy({ truncate: true });
         await Note.destroy({ truncate: true });
+        await RepeatEvent.destroy({ truncate: true });
+        await CompletedEvent.destroy({ truncate: true });
         await User.create({
             username: 'testUser',
             email: 'test@gmail.com',

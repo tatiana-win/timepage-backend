@@ -3,7 +3,7 @@ const { DataTypes, ENUM } = require("sequelize");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('repeatEvents', {
+    await queryInterface.createTable('completedEvents', {
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -18,26 +18,18 @@ module.exports = {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      dayOfWeek: {
-        type: ENUM('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'),
-      },
-      day: {
-        type: DataTypes.INTEGER,
-        validate: {
-          min: 1,
-          max: 2
-        }
-      },
       date: {
         type: DataTypes.DATE,
       },
-      originalDate: {
-        type: DataTypes.DATE,
-        allowNull: false,
+      createdAt: {
+        type: DataTypes.STRING
+      },
+      updatedAt: {
+        type: DataTypes.STRING
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('repeatEvents');
+    await queryInterface.dropTable('completedEvents');
   }
 };
