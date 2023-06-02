@@ -34,7 +34,13 @@ const deleteRepeatEvent = async (noteId) => {
     });
 };
 
-const getRepeatNotes = async (from, to, userId, excludeIds) => {
+/**
+ * Returns events for a specific date range and a specific user
+ * @param from
+ * @param to
+ * @param userId
+ */
+const getRepeatNotes = async (from, to, userId) => {
     const maxDate = to.getDate();
     const minDate = from.getDate();
 
@@ -47,14 +53,18 @@ const getRepeatNotes = async (from, to, userId, excludeIds) => {
             },
             userId: {
                 [Op.eq]: userId
+            },
+            originalDate: {
+                [Op.lt]: new Date(from)
             }
         },
     }));
 
-    const notesIds = repeatEvents.map(event => event.noteId).filter(id => !excludeIds.includes(id));
+    const notesIds = repeatEvents.map(event => event.noteId);
     if (!notesIds.length) {
         return [];
     }
+
     return (await Note.findAll({
         where: { id: notesIds },
         order: [
@@ -67,6 +77,14 @@ const getRepeatNotes = async (from, to, userId, excludeIds) => {
     });
 }
 
+/**
+ * Create sequelize condition for day field
+ * For example, for date range from 29.05 to 04.06 it will be:
+ * 29 <= day <= 31 || 1 <= day <= 4
+ * @param minDate
+ * @param maxDate
+ * @returns {{}|{}}
+ */
 const getDayCondition = (minDate, maxDate) => {
     return minDate > maxDate ? {
         [Op.or]: [{
@@ -82,6 +100,14 @@ const getDayCondition = (minDate, maxDate) => {
     };
 }
 
+/**
+ * Create sequelize condition for date field
+ * For example, for date range from 29.05.2023 to 04.06.2023 it will be:
+ * 29.05.1980 <= day <= 04.06.1980
+ * @param fromString
+ * @param toString
+ * @returns {{}}
+ */
 const getDateCondition = (fromString, toString) => {
     const from = new Date(fromString);
     const to = new Date(toString);
@@ -97,6 +123,17 @@ const getDateCondition = (fromString, toString) => {
     };
 }
 
+/**
+ * Returns date based on the date range and the repeat event conditions
+ * For example, for date range from 29.05.2023 to 04.06.2023 it will be:
+ * For every week event with dayOfWeek=Wed: 31.05.2023
+ * For every month with day=2: 02.06.2023
+ * For every year with date=1980-05-31: 31.05.2023
+ * @param event
+ * @param from
+ * @param to
+ * @returns {Date}
+ */
 const getEventDate = (event, from ,to) => {
     let eventDate;
     if (event.dayOfWeek) {
@@ -112,7 +149,6 @@ const getEventDate = (event, from ,to) => {
         }
     }
     if (event.date) {
-        console.log('!!!!!!!!', event);
         const fromYear = (new Date(from)).getFullYear();
         const toYear = (new Date(to)).getFullYear();
         const eventMonth = (new Date(event.date)).getMonth();
@@ -131,6 +167,15 @@ const getEventDate = (event, from ,to) => {
     return eventDate;
 }
 
+/**
+ * Set event fields based on period
+ * For date 30.05.2023 it will be:
+ * For every week: dayOfWeek = Tue
+ * For every month: day = 30
+ * For every year: date = 1980-05-30
+ * @param date
+ * @param period
+ */
 const setEventDates = (date, period) => {
     const event = {
         dayOfWeek: null,

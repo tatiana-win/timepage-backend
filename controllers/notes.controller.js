@@ -25,7 +25,7 @@ exports.getNotes = async (req, res) => {
             });
 
 
-            notes = [...notes, ...(await getRepeatNotes(from, to, req.userId, notes.map(n => n.id)))];
+            notes = [...notes, ...(await getRepeatNotes(from, to, req.userId))];
             const completedEvents = await getCompletedEvents(from, to, req.userId);
             notes = notes.map(note => {
                 const completed = !!completedEvents.find(event => event.noteId === note.id);
