@@ -1,6 +1,6 @@
 const { Note } = require("../models/Note");
 const { Op } = require('sequelize');
-const { getRepeatNotes, createRepeatEvent, updateRepeatEvent, deleteRepeatEvent } = require("./repeat.controller");
+const { getRepeatNotes, createRepeatEvent, updateRepeatEvent, deleteRepeatEvent, deleteRepeatEventForDate } = require("./repeat.controller");
 const {getCompletedEvents} = require("./completedEvents.controller");
 
 exports.getNotes = async (req, res) => {
@@ -126,12 +126,16 @@ exports.updateNote = async (req, res) => {
 
 exports.deleteNote = async (req, res) => {
     try {
-        await Note.destroy({
-            where: {
-                id: req.params.id
-            }
-        });
-        await deleteRepeatEvent(req.params.id);
+        if (req.body.date) {
+            await deleteRepeatEventForDate(req.params.id, req.body.date)
+        } else {
+            await Note.destroy({
+                where: {
+                    id: req.params.id
+                }
+            });
+            await deleteRepeatEvent(req.params.id);
+        }
         res.json(req.params.id);
     } catch (e) {
         res.status(500).send({ message: e.message });

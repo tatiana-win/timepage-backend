@@ -60,7 +60,13 @@ const getRepeatNotes = async (from, to, userId) => {
         },
     }));
 
-    const notesIds = repeatEvents.map(event => event.noteId);
+    const notesIds = repeatEvents.
+        filter(event => !event.deletedDates?.some(date => {
+            console.log('!!!!!event date', date);
+
+            return from < date && to > date
+    })).
+        map(event => event.noteId);
     if (!notesIds.length) {
         return [];
     }
@@ -196,9 +202,30 @@ const setEventDates = (date, period) => {
     return event;
 }
 
+const deleteRepeatEventForDate = async (noteId, date) => {
+    const event = (await RepeatEvent.findAll({
+        where: {
+            noteId
+        }
+    }))[0];
+    if (!event) {
+        return;
+    }
+    event.deletedDates = event.deletedDates ?  event.deletedDates.push(date) : [date];
+    return RepeatEvent.update({
+        deletedDates: event.deletedDates
+        },
+        {
+            where: {
+                id: event.id
+            }
+        });
+}
+
 module.exports = {
     createRepeatEvent,
     updateRepeatEvent,
     deleteRepeatEvent,
-    getRepeatNotes
+    getRepeatNotes,
+    deleteRepeatEventForDate
 }

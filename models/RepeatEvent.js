@@ -26,6 +26,10 @@ const RepeatEvent = sq.define("repeatEvent", {
     originalDate: {
         type: DataTypes.DATE,
         allowNull: false,
+    },
+    deletedDates: {
+        type: DataTypes.ARRAY(DataTypes.DATE),
+        defaultValue: []
     }
 });
 
