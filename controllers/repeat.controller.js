@@ -61,11 +61,7 @@ const getRepeatNotes = async (from, to, userId) => {
     }));
 
     const notesIds = repeatEvents.
-        filter(event => !event.deletedDates?.some(date => {
-            console.log('!!!!!event date', date);
-
-            return from < date && to > date
-    })).
+        filter(event => !event.deletedDates?.some(date => from < date && to > date)).
         map(event => event.noteId);
     if (!notesIds.length) {
         return [];
@@ -211,7 +207,12 @@ const deleteRepeatEventForDate = async (noteId, date) => {
     if (!event) {
         return;
     }
-    event.deletedDates = event.deletedDates ?  event.deletedDates.push(date) : [date];
+
+    if (event.deletedDates) {
+        event.deletedDates.push(date);
+    } else {
+        event.deletedDates = [date];
+    }
     return RepeatEvent.update({
         deletedDates: event.deletedDates
         },
