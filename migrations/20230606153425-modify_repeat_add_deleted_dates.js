@@ -13,7 +13,7 @@ module.exports = {
             type: DataTypes.ARRAY(DataTypes.DATE),
             defaultValue: []
           }
-      )]
+      )]);
   },
 
   async down (queryInterface) {
